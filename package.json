@@ -1,0 +1,9 @@
+{
+  "name": "pollinations-comic-page",
+  "private": true,
+  "type": "module",
+  "description": "Static Space: one idea in, a Pollinations comic page out.",
+  "scripts": {
+    "test": "node --test tests/*.test.mjs"
+  }
+}

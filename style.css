@@ -1,0 +1,217 @@
+:root {
+  --bg: #12121a;
+  --panel: #1b1b26;
+  --line: #2b2b3a;
+  --text: #ececf1;
+  --muted: #a2a2b5;
+  --accent: #8b7bff;
+  --accent-strong: #6f5cff;
+  --danger: #ff7b7b;
+  --ok: #7bd88f;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: radial-gradient(
+    1200px 600px at 20% -10%,
+    #262046 0%,
+    var(--bg) 60%
+  );
+  color: var(--text);
+  font:
+    16px/1.55 system-ui,
+    -apple-system,
+    "Segoe UI",
+    sans-serif;
+  min-height: 100vh;
+}
+
+main {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 40px 20px 64px;
+  display: grid;
+  gap: 20px;
+}
+
+header h1 {
+  margin: 0 0 8px;
+  font-size: clamp(28px, 4vw, 40px);
+  letter-spacing: -0.02em;
+}
+
+.lede {
+  margin: 0 0 6px;
+  color: var(--muted);
+  max-width: 70ch;
+}
+
+.lede.small {
+  font-size: 14px;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 20px;
+  display: grid;
+  gap: 14px;
+}
+
+h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.row.controls label {
+  min-width: 52px;
+}
+
+.row > div:first-child {
+  flex: 1 1 260px;
+}
+
+label {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+input,
+textarea,
+select {
+  background: #14141d;
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  padding: 10px 12px;
+  font: inherit;
+}
+
+input[type="text"],
+input[type="password"] {
+  flex: 1 1 240px;
+}
+
+textarea {
+  resize: vertical;
+  width: 100%;
+}
+
+button,
+.button {
+  background: #23232f;
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  padding: 10px 14px;
+  font: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+
+button:hover,
+.button:hover {
+  border-color: var(--accent);
+}
+
+button.primary,
+.button.primary {
+  background: var(--accent-strong);
+  border-color: var(--accent-strong);
+  color: white;
+  font-weight: 600;
+}
+
+button.ghost,
+.button.ghost {
+  background: transparent;
+}
+
+button[disabled] {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.hint {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 0;
+}
+
+.device {
+  border: 1px dashed var(--accent);
+  border-radius: 10px;
+  padding: 12px 14px;
+  background: #191830;
+}
+
+.device code {
+  background: #0e0e17;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-size: 18px;
+  letter-spacing: 0.08em;
+}
+
+canvas {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: #0e0e17;
+}
+
+.script {
+  background: #0e0e17;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px;
+  margin: 0;
+  white-space: pre-wrap;
+  font:
+    13px/1.5 ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+  color: var(--muted);
+  max-height: 320px;
+  overflow: auto;
+}
+
+details summary {
+  cursor: pointer;
+  color: var(--muted);
+}
+
+a {
+  color: var(--accent);
+}
+
+footer {
+  color: var(--muted);
+  font-size: 13px;
+  text-align: center;
+  padding-top: 8px;
+}
+
+.status-error {
+  color: var(--danger);
+}
+
+.status-ok {
+  color: var(--ok);
+}

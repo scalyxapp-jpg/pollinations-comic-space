@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pollinations Comic Page</title>
+    <meta
+      name="description"
+      content="One idea in, a comic page out. Powered by Pollinations, paid with your own Pollen."
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>Pollinations Comic Page</h1>
+        <p class="lede">
+          One idea in, a comic page out. A text model writes the panel script,
+          an image model draws every panel, and the page is assembled in your
+          browser.
+        </p>
+        <p class="lede small">
+          You sign in with your own Pollinations account, so the requests are
+          billed to
+          <strong>your</strong> Pollen and this Space never needs a key of its
+          own.
+        </p>
+      </header>
+
+      <section class="panel" id="account">
+        <div class="row">
+          <div>
+            <h2>Sign in</h2>
+            <p class="hint">
+              Uses the device flow: you get a short code, approve it on
+              enter.pollinations.ai, and the key stays in this browser.
+            </p>
+          </div>
+          <button id="signin" type="button">Sign in with Pollinations</button>
+        </div>
+        <div id="device" class="device" hidden>
+          <p>
+            Open
+            <a id="device-link" href="#" target="_blank" rel="noreferrer"
+              >enter.pollinations.ai/device</a
+            >
+            and enter the code
+            <code id="device-code">…</code>
+          </p>
+          <p class="hint" id="device-state">Waiting for approval…</p>
+        </div>
+        <div class="row">
+          <label for="key"
+            >…or paste an API key from enter.pollinations.ai/keys</label
+          >
+          <input
+            id="key"
+            type="password"
+            placeholder="sk_…"
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <button id="forget" type="button" class="ghost">Forget</button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <label for="idea">Your idea</label>
+        <textarea
+          id="idea"
+          rows="2"
+          placeholder="a lighthouse keeper who befriends a storm cloud"
+        ></textarea>
+
+        <div class="row controls">
+          <label for="panels">Panels</label>
+          <select id="panels">
+            <option value="2">2</option>
+            <option value="4" selected>4</option>
+            <option value="6">6</option>
+          </select>
+          <button id="generate" type="button" class="primary">
+            Make the comic
+          </button>
+        </div>
+
+        <details>
+          <summary>Models</summary>
+          <div class="row controls">
+            <label for="text-model">Text</label>
+            <input id="text-model" type="text" />
+          </div>
+          <div class="row controls">
+            <label for="image-model">Image</label>
+            <input id="image-model" type="text" />
+          </div>
+          <p class="hint">
+            Any id from
+            <a
+              href="https://gen.pollinations.ai/models"
+              target="_blank"
+              rel="noreferrer"
+              >the model list</a
+            >.
+          </p>
+        </details>
+      </section>
+
+      <section class="panel" id="result" hidden>
+        <div class="row">
+          <h2>Your comic</h2>
+          <div class="row">
+            <a id="download-page" class="button" download="comic.png"
+              >Download page</a
+            >
+            <a id="download-script" class="button ghost" download="script.txt"
+              >Download script</a
+            >
+          </div>
+        </div>
+        <canvas id="page"></canvas>
+        <pre id="script" class="script"></pre>
+      </section>
+
+      <section class="panel" id="status" hidden>
+        <h2>Progress</h2>
+        <pre id="log" class="script"></pre>
+      </section>
+
+      <footer>
+        Built with
+        <a href="https://pollinations.ai" target="_blank" rel="noreferrer"
+          >Pollinations</a
+        >. Duplicate this Space and it runs for your visitors, on their own
+        Pollen.
+      </footer>
+    </main>
+    <script type="module" src="app.js"></script>
+  </body>
+</html>

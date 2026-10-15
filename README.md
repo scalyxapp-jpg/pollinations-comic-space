@@ -3,9 +3,7 @@ title: Pollinations Comic Page
 emoji: 🖼️
 colorFrom: indigo
 colorTo: purple
-sdk: gradio
-sdk_version: 6.30.0
-app_file: app.py
+sdk: static
 pinned: false
 license: mit
 ---
@@ -13,7 +11,7 @@ license: mit
 # Pollinations Comic Page
 
 One idea in, a comic page out. A text model writes the panel script, an image model
-draws each panel, and the page is assembled with its captions underneath.
+draws every panel, and the page is assembled in your browser.
 
 Built for the Pollinations [quest #17249](https://github.com/pollinations/pollinations/issues/17249).
 
@@ -23,31 +21,41 @@ their own Pollen and this Space never runs on a key that can dry up.
 ## Use it
 
 1. Press **Sign in with Pollinations**. A short code appears.
-2. Open the link, enter the code, approve. The Space receives its own key for your
-   account — that is the standard RFC 8628 device flow, so nothing has to be
-   redirected back into this Space.
+2. Open the link, enter the code, approve. The page receives its own key for your account.
+   This is the standard RFC 8628 device flow, so nothing has to be redirected back, which
+   is what makes it work from a plain static page.
 3. Type an idea, pick 2, 4 or 6 panels, press **Make the comic**.
 
-You can also paste an API key from <https://enter.pollinations.ai/keys> instead of
-signing in. A pasted key lives in the browser session only and is never written to disk.
+You can also paste a key from <https://enter.pollinations.ai/keys> instead of signing in.
+It is kept in this browser's `localStorage` and never sent anywhere except Pollinations;
+**Forget** removes it again.
 
-Getting a code and a key takes about 20 seconds, and a page takes roughly 10 seconds per
-panel.
+A page takes roughly 10 seconds per panel.
+
+## Why this Space is static
+
+Gradio and Docker Spaces on `cpu-basic` need a PRO subscription, while static Spaces are
+free for everyone. The browser calls Pollinations directly — the API sends
+`access-control-allow-origin: *` and allows the `authorization` header on preflight — so
+there is no server to pay for, and **duplicating this Space costs nobody anything**.
+
+That is exactly the point of the quest: the app has no key of its own, and every visitor
+pays with their own Pollen. The same generator is also in `gradio/` as a Python app for
+anyone who wants a server-side backend.
 
 ## Make it your own
 
-- **Duplicate this Space** (⋮ → Duplicate this Space). It runs on your account at once,
-  with your visitors signing in as above.
-- **Add an app key (optional).** Create an App Key at
-  <https://enter.pollinations.ai/keys> and set it as a Space secret named
-  `POLLINATIONS_APP_KEY`. Visitors who sign in are then attributed to your app, so you
-  earn your share of what they spend. Without the secret, sign-in still works and
-  visitors still pay with their own Pollen — the app is simply not attributed.
-- **Change the comic.** The panel script lives in `SCRIPT_SYSTEM_PROMPT` in `comic.py`;
-  the layout is `panel_grid`, which takes a column count. Captions are drawn with PIL,
-  so a speech-bubble layout is a change in one function.
-- **Change the models.** Two boxes under _Models_ on the page, or the defaults
-  `DEFAULT_TEXT_MODEL` and `DEFAULT_IMAGE_MODEL` in `comic.py`. Any id from
+- **Duplicate this Space** (⋮ → Duplicate this Space). It runs immediately.
+- **Get attributed (optional).** Put your Pollinations app key in `APP_KEY` in
+  `pipeline.js`. Visitors who sign in are then attached to your app, so you earn your
+  share of what they spend. Without it sign-in still works and visitors still pay with
+  their own Pollen.
+- **Change the comic.** The panel script comes from `SCRIPT_SYSTEM_PROMPT` in
+  `pipeline.js`; the page layout is `panelLayout`, which takes a column count; the
+  drawing is `composePage` in `app.js`. A speech-bubble layout is a change in one
+  function.
+- **Change the models.** The two fields under _Models_, or `DEFAULT_TEXT_MODEL` and
+  `DEFAULT_IMAGE_MODEL` in `pipeline.js`. Any id from
   <https://gen.pollinations.ai/models> works.
 
 ## How it works
@@ -57,31 +65,30 @@ panel.
 | Sign in  | `POST /api/device/code`, then `POST /api/device/token` until approved |
 | Script   | `POST /v1/chat/completions` on a text model                           |
 | Panels   | `GET /image/{prompt}?model=…&width=512&height=512`                    |
-| Assembly | Pillow, in `panel_grid`                                               |
+| Assembly | `<canvas>`, in `composePage`                                          |
 
 Two details worth knowing, because both cost an afternoon otherwise:
 
 - The image endpoint requires **at least 256 px per side**; smaller requests are refused
-  with `400`. Panels are 512 px and scaled down for the page.
-- Models do not always answer with clean JSON, so `parse_panels` accepts JSON inside a
-  code fence or surrounded by prose, and falls back to line-by-line captions. A rambling
-  model still produces a page instead of an error.
+  with `400`. Panels are 512 px and scaled to fit the page.
+- Models do not always answer with clean JSON, so `parsePanels` accepts JSON inside a code
+  fence or surrounded by prose, and falls back to line-by-line captions. A rambling model
+  still produces a page instead of an error.
 
 ## Tests
 
 ```bash
-pip install -r requirements.txt pytest
-pytest test_comic.py -q      # 10 tests, no API key needed
+node --test 'tests/*.test.mjs'    # 16 tests, no network and no API key
 ```
 
-They cover the parser fallbacks and the page geometry, which is the arithmetic worth
-pinning down.
+They cover the parser fallbacks, the page geometry, the device-flow polling (against a
+stub `fetch`), and the app-key attribution.
 
-## Costs and limits
+## Costs
 
-One page is one text request and one image request per panel. On the free tier that is
-a fraction of a Pollen; see <https://gen.pollinations.ai/models> for current prices. The
-Space adds no cost of its own — it has no key and stores nothing about you.
+One page is one text request and one image request per panel. On the free tier that is a
+fraction of a Pollen; see <https://gen.pollinations.ai/models> for current prices. This
+Space has no key, no server, and stores nothing about you beyond the key you sign in with.
 
 ## License
 
