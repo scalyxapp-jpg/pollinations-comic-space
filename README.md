@@ -13,6 +13,8 @@ license: mit
 One idea in, a comic page out. A text model writes the panel script, an image model
 draws every panel, and the page is assembled in your browser.
 
+![The Space with a generated comic](docs/screenshot.png)
+
 Built for the Pollinations [quest #17249](https://github.com/pollinations/pollinations/issues/17249).
 
 **Visitors sign in with their own Pollinations account**, so the requests are billed to
