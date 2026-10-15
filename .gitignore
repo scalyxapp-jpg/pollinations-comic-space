@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+.venv/
+venv.done
+pip.log
+gradio.log
+localtest-*.png
+localtest-*.txt
+.pytest_cache/
