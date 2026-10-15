@@ -64,11 +64,15 @@ anyone who wants a server-side backend.
 
 ## How it works
 
+The calls live in `pipeline.js`: `BASE_URL` and `ENTER_URL` at lines 8-9, the script request at
+line 60, the panel request at line 99, and the device flow at lines 223 and 238 (all under
+`https://gen.pollinations.ai` and `https://enter.pollinations.ai`).
+
 | Step     | Call                                                                  |
 | -------- | --------------------------------------------------------------------- |
-| Sign in  | `POST /api/device/code`, then `POST /api/device/token` until approved |
-| Script   | `POST /v1/chat/completions` on a text model                           |
-| Panels   | `GET /image/{prompt}?model=…&width=512&height=512`                    |
+| Sign in  | `POST https://enter.pollinations.ai/api/device/code`, then `POST https://enter.pollinations.ai/api/device/token` until approved |
+| Script   | `POST https://gen.pollinations.ai/v1/chat/completions` on a text model                           |
+| Panels   | `GET https://gen.pollinations.ai/image/{prompt}?model=…&width=512&height=512`                    |
 | Assembly | `<canvas>`, in `composePage`                                          |
 
 Two details worth knowing, because both cost an afternoon otherwise:
