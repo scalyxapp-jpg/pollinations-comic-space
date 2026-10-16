@@ -8,38 +8,24 @@ import {
   DEFAULT_TEXT_MODEL,
   PANEL_SIZE,
   PollinationsError,
+  createKeyStore,
   panelLayout,
   renderPanel,
   signIn,
   writeScript,
 } from "./pipeline.js";
 
-const KEY_STORAGE = "pollinationsKey";
 
 const element = (id) => document.getElementById(id);
 const keyField = element("key");
 const logOutput = element("log");
 const statusPanel = element("status");
 
-function storedKey() {
-  try {
-    return localStorage.getItem(KEY_STORAGE) || "";
-  } catch {
-    return "";
-  }
-}
-
-function rememberKey(value) {
-  try {
-    if (value) localStorage.setItem(KEY_STORAGE, value);
-    else localStorage.removeItem(KEY_STORAGE);
-  } catch {
-    /* private mode: the key then only lives in the field */
-  }
-}
+// Keeps the key in memory as well, so blocked storage cannot lose it.
+const keys = createKeyStore();
 
 function currentKey() {
-  return keyField.value.trim() || storedKey();
+  return keyField.value.trim() || keys.get();
 }
 
 function log(line) {
@@ -202,7 +188,7 @@ async function beginSignIn() {
         element("device-state").textContent = "Waiting for approval…";
       },
     });
-    rememberKey(token);
+    keys.set(token);
     keyField.value = "";
     element("device-state").textContent =
       "Signed in. Your requests are billed to your own Pollen.";
@@ -216,19 +202,19 @@ async function beginSignIn() {
 }
 
 function init() {
-  keyField.value = storedKey();
+  keyField.value = keys.get();
   element("text-model").value = DEFAULT_TEXT_MODEL;
   element("image-model").value = DEFAULT_IMAGE_MODEL;
 
   element("generate").addEventListener("click", generate);
   element("signin").addEventListener("click", beginSignIn);
   element("forget").addEventListener("click", () => {
-    rememberKey("");
+    keys.set("");
     keyField.value = "";
     element("device-state").textContent = "Key forgotten.";
     element("device-state").className = "hint";
   });
-  keyField.addEventListener("change", () => rememberKey(keyField.value.trim()));
+  keyField.addEventListener("change", () => keys.set(keyField.value.trim()));
   element("idea").addEventListener("keydown", (event) => {
     if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) generate();
   });

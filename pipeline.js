@@ -29,6 +29,40 @@ export const SCRIPT_SYSTEM_PROMPT =
   "of that panel, mentioning the same characters and setting every time so the " +
   "panels look like one story.";
 
+/** Where the key is kept between visits. */
+export const KEY_STORAGE_NAME = "pollinationsKey";
+
+/**
+ * Keeps the API key, and keeps working when storage is blocked.
+ *
+ * Browsers refuse `localStorage` in private windows and when site data is blocked.
+ * A key that lives only in storage is then lost straight after a successful
+ * sign-in while the page still reports success, so it also stays in memory.
+ */
+export function createKeyStore(storage = globalThis.localStorage) {
+  let memory = "";
+
+  return {
+    get() {
+      if (memory) return memory;
+      try {
+        return storage?.getItem(KEY_STORAGE_NAME) || "";
+      } catch {
+        return "";
+      }
+    },
+    set(value) {
+      memory = value || "";
+      try {
+        if (memory) storage?.setItem(KEY_STORAGE_NAME, memory);
+        else storage?.removeItem(KEY_STORAGE_NAME);
+      } catch {
+        /* Storage is blocked: the key stays in memory for this session. */
+      }
+    },
+  };
+}
+
 /** A failure worth showing to the visitor, not a stack trace. */
 export class PollinationsError extends Error {}
 

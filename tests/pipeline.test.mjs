@@ -7,7 +7,15 @@
 
 import test from "node:test";
 import assert from "node:assert/strict";
-import { parsePanels, panelLayout, describeError, signIn, writeScript, PollinationsError } from "../pipeline.js";
+import {
+  createKeyStore,
+  parsePanels,
+  panelLayout,
+  describeError,
+  signIn,
+  writeScript,
+  PollinationsError,
+} from "../pipeline.js";
 
 const jsonResponse = (body, status = 200) => ({
     ok: status / 100 === 2,
@@ -172,4 +180,44 @@ test("signIn gives up with a readable message when nobody approves", async () =>
         () => signIn({ fetchImpl, timeoutSeconds: 0, sleep: async () => {} }),
         (error) => error instanceof PollinationsError && /not approved in time/.test(error.message),
     );
+});
+
+test("createKeyStore keeps the key when storage is blocked", () => {
+    // Private windows and blocked site data make localStorage throw. The Space used
+    // to report a successful sign-in and then lose the key.
+    const blocked = {
+        getItem() {
+            throw new Error("storage is blocked");
+        },
+        setItem() {
+            throw new Error("storage is blocked");
+        },
+        removeItem() {
+            throw new Error("storage is blocked");
+        },
+    };
+
+    const keys = createKeyStore(blocked);
+    keys.set("sk_test");
+
+    assert.equal(keys.get(), "sk_test", "a successful sign-in has to survive blocked storage");
+});
+
+test("createKeyStore persists in working storage and clears it again", () => {
+    const stored = new Map();
+    const storage = {
+        getItem: (key) => stored.get(key) ?? null,
+        setItem: (key, value) => stored.set(key, value),
+        removeItem: (key) => stored.delete(key),
+    };
+
+    const keys = createKeyStore(storage);
+    keys.set("sk_test");
+    assert.equal(keys.get(), "sk_test");
+    assert.equal(stored.get("pollinationsKey"), "sk_test", "the key is written for the next visit");
+    assert.equal(createKeyStore(storage).get(), "sk_test", "a new visit reads it back");
+
+    keys.set("");
+    assert.equal(keys.get(), "");
+    assert.equal(stored.has("pollinationsKey"), false, "forget removes it from storage too");
 });
